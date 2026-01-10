@@ -14,9 +14,6 @@ PREV_STATUS = None
 LEFT_TEMPLATE  = cv.imread("img/left_arrow.png",  cv.IMREAD_GRAYSCALE)
 RIGHT_TEMPLATE = cv.imread("img/right_arrow.png", cv.IMREAD_GRAYSCALE)
 
-
-
-
 MINIGAME_MONITOR = {
     "left": 740,
     "top": 480,
@@ -167,6 +164,25 @@ def find_minigame_left():
         check_pixel((836, 539), (185, 95, 40))
     )
 
+def find_monthly_reward():
+    return (
+        check_pixel((734, 465), (238, 226, 213)) and
+        check_pixel((821, 380), (31, 144, 150)) and
+        check_pixel((1098, 542), (113, 85, 80))
+    )
+
+def find_buynewbait():
+    return (
+        check_pixel((1001, 902), (232, 232, 232)) and 
+        check_pixel((1369, 900), (232, 232, 232)) 
+    )
+
+def find_buypole():
+    return (
+        check_pixel((1503, 787), (232, 232, 232)) and 
+        check_pixel((1503, 787), (232, 232, 232)) 
+    )
+
 def find_minigame_right():
     return check_pixel((1050, 538), (252, 77, 6))
 
@@ -190,45 +206,6 @@ def RUN_PLAY():
     time.sleep(1)
     click_at((960, 540))
     time.sleep(0.1)
-
-# def RUN_MINIGAME():
-#     global current_key
-#     current_key = None
-
-#     print("PLAYING MINIGAME...")
-#     pydirectinput.moveTo(960, 540)
-#     time.sleep(0.15)
-#     pydirectinput.mouseDown()
-
-#     while True:
-#         # exit condition (เช็คก่อน)
-#         if find_exit() or find_continue() or find_UI():
-#             break
-
-#         left = find_minigame_left()
-#         right = find_minigame_right()
-
-#         if left:
-#             if current_key != 'a':
-#                 keyboard.release('d')
-#                 keyboard.press('a')
-#                 current_key = 'a'
-
-#         elif right:
-#             if current_key != 'd':
-#                 keyboard.release('a')
-#                 keyboard.press('d')
-#                 current_key = 'd'
-
-#         time.sleep(0.03)  # 🔥 สำคัญมาก (30ms = มนุษย์)
-
-#     # cleanup
-#     pydirectinput.mouseUp()
-#     keyboard.release('a')
-#     keyboard.release('d')
-#     current_key = None
-#     time.sleep(0.4)
-
 
 def RUN_MINIGAME():
     global current_key
@@ -327,9 +304,12 @@ while True:
     status_continue = find_continue()
     status_pole = find_pole()
     status_bait = find_bait()
+    status_monthly = find_monthly_reward()
 
     if status_start:
         STATUS = "START"
+    elif status_monthly:
+        STATUS = "MONTHLY REWARD"
     elif status_pole and status_ui:
         STATUS = "NOT HAVE FISHING POLE"
     elif status_bait and status_ui:
@@ -375,6 +355,11 @@ while True:
 
     elif STATUS == "NOT HAVE BAIT":
         RUN_REPLENISH_BAIT()
+
+    elif STATUS == "MONTHLY REWARD":
+        print("CLAIMING MONTHLY REWARD...")
+        click_at((949, 912))
+        time.sleep(1)
 
 
     # ---------- DEBUG ----------
