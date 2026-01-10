@@ -8,6 +8,8 @@ import numpy as np
 
 pydirectinput.PAUSE = 0.05
 
+
+DEBUG = False
 STATUS = None
 PREV_STATUS = None
 
@@ -179,21 +181,25 @@ def find_buynewbait():
 
 def find_buypole():
     return (
-        check_pixel((1503, 787), (232, 232, 232)) and 
-        check_pixel((1503, 787), (232, 232, 232)) 
+        check_pixel((1270, 902), (232, 232, 232)) and 
+        check_pixel((1612, 904), (232, 232, 232)) 
     )
 
 def find_minigame_right():
     return check_pixel((1050, 538), (252, 77, 6))
 
+
+
 def click_at(position):
     x, y = position
+    time.sleep(0.15)
     pydirectinput.moveTo(x, y)
     time.sleep(0.15)
     print("Mouse at:", pydirectinput.position())
     pydirectinput.mouseDown()
     time.sleep(0.08)
     pydirectinput.mouseUp()
+    time.sleep(0.15)
 
 def RUN_START():
     print("STARTING...")
@@ -203,9 +209,10 @@ def RUN_START():
 
 def RUN_PLAY():
     print("START FISHINGS...")
+    close_bait()
+    close_pole()
     time.sleep(1)
     click_at((960, 540))
-    time.sleep(0.1)
 
 def RUN_MINIGAME():
     global current_key
@@ -240,7 +247,8 @@ def RUN_MINIGAME():
                 RIGHT_TEMPLATE
             )
 
-            debug_minigame(frame, left_roi, right_roi, direction)
+            if DEBUG:
+                debug_minigame(frame, left_roi, right_roi, direction)
 
             if direction == "LEFT":
                 print("LEFT ARROW")
@@ -267,29 +275,101 @@ def RUN_MINIGAME():
     current_key = None
     time.sleep(0.4)
 
-
-
-
 def RUN_CONTINUE():
     print("CONTINUING...")
     click_at((1459, 978))
     time.sleep(0.3)
+    
+def find_itemcanbuy():
+    return (
+        int(not check_pixel((724, 449), (124, 124, 124))) +
+        int(not check_pixel((952, 450), (124, 124, 124))) +
+        int(not check_pixel((1190, 450), (124, 124, 124))) +
+        int(not check_pixel((1418, 452), (124, 124, 124)))
+    )
+
+def close_bait():
+    if check_pixel((1540, 507), (241, 94, 14)):
+        click_at((1540, 507))
+
+def close_pole():
+    if check_pixel((1808, 507), (251, 97, 2)):
+        click_at((1808, 507))
+
+def buy_MAX():
+    click_at((1564, 729))
+    time.sleep(0.1)
+    click_at((1215, 926))
+    time.sleep(0.1)
+    click_at((1197, 798))
+    time.sleep(0.1)
+    keyboard.press_and_release('esc')
+    time.sleep(0.1)
 
 def RUN_NEWPOLE():
     keyboard.press('alt')
     time.sleep(0.1)
     click_at((1666, 1014))
     time.sleep(0.3)
+    if find_buypole():
+        print("BUYING NEW POLE...")
+        click_at((1453, 902))
+        time.sleep(1)
+        itemunlocked = find_itemcanbuy()
+        time.sleep(0.1)
+        keyboard.release('alt')
+        time.sleep(0.1)
+        print("ITEMS CAN BUY:", itemunlocked)
+        if itemunlocked == 4:
+            click_at((1464, 318))
+            buy_MAX()
+        elif itemunlocked == 3:
+            click_at((1225, 316))
+            buy_MAX()
+        elif itemunlocked == 2:
+            click_at((996, 308))
+            buy_MAX()
+        elif itemunlocked == 1:
+            click_at((772, 317))
+            buy_MAX()
+        elif itemunlocked >= 0:
+            click_at((532, 319))
+            buy_MAX()
+        time.sleep(0.1)
+        keyboard.press('alt')
+        time.sleep(0.1)
     click_at((1716, 594))
     time.sleep(0.1)
     keyboard.release('alt')
     time.sleep(1)
 
 def RUN_REPLENISH_BAIT():
+    time.sleep(0.1)
     keyboard.press('alt')
     time.sleep(0.1)
     click_at((1399, 1015))
     time.sleep(0.3)
+    if find_buynewbait():
+        print("BUYING BAIT...")
+        click_at((1186, 902))
+        time.sleep(1)
+        itemunlocked = find_itemcanbuy()
+        time.sleep(0.1)
+        keyboard.release('alt')
+        time.sleep(0.1)
+        print("ITEMS CAN BUY:", itemunlocked)
+        if itemunlocked >= 3:
+            click_at((771, 309))
+            buy_MAX()
+        elif itemunlocked >= 1:
+            click_at((544, 322))
+            buy_MAX()
+        elif itemunlocked == 0:
+            click_at((309, 310))
+            buy_MAX()
+        time.sleep(0.1)
+        keyboard.press('alt')
+        time.sleep(0.1)
     click_at((1449, 596))
     time.sleep(0.1)
     keyboard.release('alt')
@@ -310,9 +390,9 @@ while True:
         STATUS = "START"
     elif status_monthly:
         STATUS = "MONTHLY REWARD"
-    elif status_pole and status_ui:
+    elif status_pole and status_ui and status_esc:
         STATUS = "NOT HAVE FISHING POLE"
-    elif status_bait and status_ui:
+    elif status_bait and status_ui and status_esc:
         STATUS = "NOT HAVE BAIT"
     elif status_ui and status_esc:
         STATUS = "READY"
@@ -332,12 +412,6 @@ while True:
 
         if STATUS == "START":
             RUN_START()
-        
-        elif STATUS == "NOT HAVE FISHING POLE":
-            RUN_NEWPOLE()
-
-        elif STATUS == "NOT HAVE BAIT":
-            RUN_REPLENISH_BAIT()
 
         elif STATUS == "PLAYING MINIGAME":
             RUN_MINIGAME()
@@ -363,11 +437,13 @@ while True:
 
 
     # ---------- DEBUG ----------
-    print("START:", status_start)
-    print("UI   :", status_ui)
-    print("ESC  :", status_esc)
-    print("PLAY :", status_play)
-    print("STATUS:", STATUS)
-    print("-" * 20)
+
+    if DEBUG:
+        print("START:", status_start)
+        print("UI   :", status_ui)
+        print("ESC  :", status_esc)
+        print("PLAY :", status_play)
+        print("STATUS:", STATUS)
+        print("-" * 20)
 
     time.sleep(0.3)
