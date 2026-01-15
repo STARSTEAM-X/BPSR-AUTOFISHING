@@ -433,6 +433,8 @@ while True:
     elif STATUS == "MONTHLY REWARD":
         print("CLAIMING MONTHLY REWARD...")
         click_at((949, 912))
+        time.sleep(0.5)
+        click_at((949, 912))
         time.sleep(1)
 
 
