@@ -5,6 +5,7 @@ import pydirectinput
 import mss
 import cv2 as cv
 import numpy as np
+import os
 
 pydirectinput.PAUSE = 0.05
 
@@ -12,6 +13,7 @@ pydirectinput.PAUSE = 0.05
 DEBUG = False
 STATUS = None
 PREV_STATUS = None
+RUNNING = False
 
 LEFT_TEMPLATE  = cv.imread("img/left_arrow.png",  cv.IMREAD_GRAYSCALE)
 RIGHT_TEMPLATE = cv.imread("img/right_arrow.png", cv.IMREAD_GRAYSCALE)
@@ -375,7 +377,37 @@ def RUN_REPLENISH_BAIT():
     keyboard.release('alt')
     time.sleep(1)
 
+def start_bot():
+    global RUNNING
+    RUNNING = True
+    print("BOT STARTED (F1)")
+
+def stop_bot():
+    global RUNNING, current_key
+    RUNNING = False
+    print("BOT STOPPED (F2)")
+
+    keyboard.release('a')
+    keyboard.release('d')
+    keyboard.release('alt')
+    pydirectinput.mouseUp()
+    current_key = None
+
+def hard_kill():
+    print("HARD KILL (F4)")
+    os._exit(0)
+
+keyboard.add_hotkey('F1', start_bot)
+keyboard.add_hotkey('F2', stop_bot)
+keyboard.add_hotkey('F4', hard_kill)
+
+print("Press F1 to START | F2 to STOP | F4 to EXIT")
+
 while True:
+    if not RUNNING:
+        time.sleep(0.5)
+        continue
+
     status_start = find_start()
     status_ui = find_UI()
     status_esc = find_esc()
