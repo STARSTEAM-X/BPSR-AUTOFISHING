@@ -24,3 +24,7 @@ RGB: (51, 51, 51)
 
 📍 Position: (870, 536) | 🎨 RGB: (236, 76, 34)
 📍 Position: (1050, 538) | 🎨 RGB: (252, 77, 6)
+
+py -m PyInstaller --name BPSR_AUTOFISHING --onefile --icon=icon.ico --add-data "img;img" main.py
+
+py -m PyInstaller BPSR_AUTOFISHING.spec --clean

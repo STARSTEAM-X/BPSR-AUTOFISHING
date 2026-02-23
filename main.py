@@ -6,6 +6,12 @@ import mss
 import cv2 as cv
 import numpy as np
 import os
+import sys
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 pydirectinput.PAUSE = 0.05
 
@@ -15,8 +21,15 @@ STATUS = None
 PREV_STATUS = None
 RUNNING = False
 
-LEFT_TEMPLATE  = cv.imread("img/left_arrow.png",  cv.IMREAD_GRAYSCALE)
-RIGHT_TEMPLATE = cv.imread("img/right_arrow.png", cv.IMREAD_GRAYSCALE)
+LEFT_TEMPLATE = cv.imread(
+    resource_path("img/left_arrow.png"),
+    cv.IMREAD_GRAYSCALE
+)
+
+RIGHT_TEMPLATE = cv.imread(
+    resource_path("img/right_arrow.png"),
+    cv.IMREAD_GRAYSCALE
+)
 
 MINIGAME_MONITOR = {
     "left": 740,
@@ -401,6 +414,8 @@ keyboard.add_hotkey('F1', start_bot)
 keyboard.add_hotkey('F2', stop_bot)
 keyboard.add_hotkey('F4', hard_kill)
 
+print("BPSR_AUTOFISHING")
+print("DEV : STARSTEAM_X")
 print("Press F1 to START | F2 to STOP | F4 to EXIT")
 
 while True:
