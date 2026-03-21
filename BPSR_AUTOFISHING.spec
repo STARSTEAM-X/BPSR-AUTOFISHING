@@ -1,14 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-from PyInstaller.utils.win32.versioninfo import (
-    VSVersionInfo,
-    FixedFileInfo,
-    StringFileInfo,
-    StringTable,
-    StringStruct,
-    VarFileInfo,
-    VarStruct
-)
 
 a = Analysis(
     ['main.py'],
@@ -23,7 +14,6 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
-
 pyz = PYZ(a.pure)
 
 exe = EXE(
@@ -45,36 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='icon.ico',
-
-    version=VSVersionInfo(
-        ffi=FixedFileInfo(
-            filevers=(1,0,0,0),
-            prodvers=(1,0,0,0),
-            mask=0x3f,
-            flags=0x0,
-            OS=0x40004,
-            fileType=0x1,
-            subtype=0x0,
-            date=(0, 0)
-        ),
-        kids=[
-            StringFileInfo([
-                StringTable(
-                    '040904B0',
-                    [
-                        StringStruct('CompanyName', 'STARSTEAM_X'),
-                        StringStruct('FileDescription', 'BPSR Auto Fishing Bot'),
-                        StringStruct('FileVersion', '1.0.0'),
-                        StringStruct('InternalName', 'BPSR_AUTOFISHING'),
-                        StringStruct('OriginalFilename', 'BPSR_AUTOFISHING.exe'),
-                        StringStruct('ProductName', 'BPSR_AUTOFISHING'),
-                        StringStruct('ProductVersion', '1.0.0'),
-                        StringStruct('LegalCopyright', '© STARSTEAM_X'),
-                    ]
-                )
-            ]),
-            VarFileInfo([VarStruct('Translation', [1033, 1200])])
-        ]
-    )
+    icon=['icon.ico'],
 )

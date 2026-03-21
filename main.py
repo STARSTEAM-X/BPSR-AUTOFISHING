@@ -173,19 +173,13 @@ def find_pole():
 def find_bait():
     return check_pixel((1399, 1015), (211, 211, 211))
 
-def find_minigame_left():
-    return (
-        check_pixel((870, 536), (236, 76, 34)) or
-        check_pixel((942, 538), (194, 67, 36)) or
-        check_pixel((868, 539), (186, 63, 38)) or
-        check_pixel((836, 539), (185, 95, 40))
-    )
-
 def find_monthly_reward():
     return (
-        check_pixel((734, 465), (238, 226, 213)) and
-        check_pixel((821, 380), (31, 144, 150)) and
-        check_pixel((1098, 542), (113, 85, 80))
+        check_pixel((817, 1047), (210, 197, 177)) and
+        check_pixel((892, 1050), (216, 200, 178)) and
+        check_pixel((953, 1045), (218, 201, 178)) and
+        check_pixel((1014, 1046), (219, 201, 178)) and
+        check_pixel((1059, 1049), (216, 200, 177))
     )
 
 def find_buynewbait():
@@ -199,11 +193,6 @@ def find_buypole():
         check_pixel((1270, 902), (232, 232, 232)) and 
         check_pixel((1612, 904), (232, 232, 232)) 
     )
-
-def find_minigame_right():
-    return check_pixel((1050, 538), (252, 77, 6))
-
-
 
 def click_at(position):
     x, y = position
@@ -242,7 +231,9 @@ def RUN_MINIGAME():
     with mss.mss() as sct:
         while True:
             # ออกจาก minigame (ยังใช้ pixel ได้ก่อน)
-            if find_continue() or find_exit() or find_UI():
+            if find_continue() or find_exit() or find_UI() or find_monthly_reward():
+                click_at(990,540)
+                time.sleep(0.1)
                 break
 
             # 1️⃣ capture ใหญ่ครั้งเดียว
