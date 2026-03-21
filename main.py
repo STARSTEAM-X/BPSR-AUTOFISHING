@@ -9,9 +9,8 @@ import os
 import sys
 
 def resource_path(relative_path):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
+    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
+    return os.path.join(base_path, relative_path)
 
 pydirectinput.PAUSE = 0.05
 
@@ -232,7 +231,7 @@ def RUN_MINIGAME():
         while True:
             # ออกจาก minigame (ยังใช้ pixel ได้ก่อน)
             if find_continue() or find_exit() or find_UI() or find_monthly_reward():
-                click_at(990,540)
+                click_at((960, 540))
                 time.sleep(0.1)
                 break
 
@@ -436,7 +435,7 @@ while True:
         STATUS = "READY"
     elif status_play:
         STATUS = "PLAYING MINIGAME"
-    elif not status_ui and status_esc:
+    elif not status_ui and status_esc and not status_continue:
         STATUS = "WAITING"
     elif status_exit and status_continue:
         STATUS = "CONTINUE"
@@ -454,13 +453,15 @@ while True:
         elif STATUS == "PLAYING MINIGAME":
             RUN_MINIGAME()
 
-        elif STATUS == "CONTINUE":
-            RUN_CONTINUE()
+
 
     PREV_STATUS = STATUS
 
     if STATUS == "READY":
         RUN_PLAY()
+
+    elif STATUS == "CONTINUE":
+        RUN_CONTINUE()
 
     elif STATUS == "NOT HAVE FISHING POLE":
         RUN_NEWPOLE()
